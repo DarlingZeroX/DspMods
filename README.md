@@ -7,7 +7,7 @@
 
 [StellarAutoNavigation]
 
-星际自动航行Stellar Auto Navigation 
+星际自动航行(按K键进行导航) Stellar Auto Navigation 
 
 
 [SelectBuild]

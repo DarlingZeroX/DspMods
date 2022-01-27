@@ -7,7 +7,7 @@ using HarmonyLib;
 
 namespace AutoNavigate
 {
-    [BepInPlugin(__GUID__, __NAME__, "1.02")]
+    [BepInPlugin(__GUID__, __NAME__, "1.03")]
     public class AutoNavigate : BaseUnityPlugin
     {
         public const string __NAME__ = "StellarAutoNavigation";

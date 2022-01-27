@@ -1,6 +1,5 @@
 E:\Github\DspMods\StellarAutoNavigation\bin\Release\StellarAutoNavigation.dll
 E:\Github\DspMods\StellarAutoNavigation\bin\Release\StellarAutoNavigation.pdb
-E:\Github\DspMods\StellarAutoNavigation\obj\Release\StellarAutoNavigation.csproj.AssemblyReference.cache
 E:\Github\DspMods\StellarAutoNavigation\obj\Release\StellarAutoNavigation.Properties.Resources.resources
 E:\Github\DspMods\StellarAutoNavigation\obj\Release\StellarAutoNavigation.csproj.GenerateResource.cache
 E:\Github\DspMods\StellarAutoNavigation\obj\Release\StellarAutoNavigation.csproj.CoreCompileInputs.cache

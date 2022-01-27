@@ -6,3 +6,5 @@ Backup/
 *.pdb
 
 *.cache
+
+.vs/DspMods/v17/.suo
