@@ -14,14 +14,14 @@ using HarmonyLib;
 
 namespace BetterStarmap
 {
-    internal class DetailsPreview_Impl : BaseFeature<DetailsPreview_Impl>, IFeature
+    class DetailsPreview_Impl : BaseFeature<DetailsPreview_Impl>, IFeature
     {
         private PlanetData hoveredPlanet = null;
         private StarData hoveredStar = null;
 
         public DetailsPreview_Impl()
         {
-            SetFeatureName("DetailsPreview");
+            SetFeatureName( "DetailsPreview" );
         }
 
         public void DrawGui()
@@ -29,36 +29,36 @@ namespace BetterStarmap
             isEnable = GUILayout.Toggle(isEnable, "星球细节预览".ModText());
         }
 
-        private void Reset()
+        void Reset()
         {
             hoveredStar = (StarData)null;
             hoveredPlanet = (PlanetData)null;
         }
 
-        private void SetHover(StarData star)
+        void SetHover(StarData star)
         {
             hoveredStar = star;
             hoveredPlanet = (PlanetData)null;
         }
 
-        private void SetHover(PlanetData planet)
+        void SetHover(PlanetData planet)
         {
             hoveredPlanet = planet;
             hoveredStar = (StarData)null;
         }
 
-        private bool IsHoverStar => hoveredStar != null;
-        private bool IsHoverPlanet => hoveredPlanet != null;
+        bool IsHoverStar => hoveredStar != null;
+        bool IsHoverPlanet => hoveredPlanet != null;
 
         public void OnMouseHover(UIStarmap __instance)
         {
             if (isEnable)
                 if (__instance.mouseHoverStar)
-                    SetHover(__instance.mouseHoverStar.star);
+                    SetHover( __instance.mouseHoverStar.star );
                 else if (__instance.mouseHoverPlanet)
                     SetHover(__instance.mouseHoverPlanet.planet);
-                else
-                    Reset();
+            else
+                Reset();
         }
 
         public void OnStarmapClose()
@@ -101,14 +101,13 @@ namespace BetterStarmap
         }
     }
 
-    internal class ImmediateMode_Impl : BaseFeature<ImmediateMode_Impl>, IFeature
+    class ImmediateMode_Impl : BaseFeature<ImmediateMode_Impl>, IFeature
     {
         public ImmediateMode_Impl(ConfigEntry<bool> enable)
         {
             SetFeatureName("ImmediateMode");
             configEnable = enable;
         }
-
         public void DrawGui()
         {
             if (configEnable.Value)
@@ -116,20 +115,19 @@ namespace BetterStarmap
         }
     }
 
-    internal class DisplayStarName_Impl : BaseFeature<DisplayStarName_Impl>, IFeature
+    class DisplayStarName_Impl : BaseFeature<DisplayStarName_Impl>, IFeature
     {
         public DisplayStarName_Impl()
         {
             SetFeatureName("DisplayStarName");
         }
-
         public void DrawGui()
         {
-            isEnable = GUILayout.Toggle(isEnable, "显示星球名称".ModText());
+             isEnable = GUILayout.Toggle(isEnable, "显示星球名称".ModText());
         }
     }
 
-    internal class DisplayUnknown_Impl : BaseFeature<DisplayUnknown_Impl>, IFeature
+    class DisplayUnknown_Impl : BaseFeature<DisplayUnknown_Impl>, IFeature
     {
         public static int historyUniverseObserveLevel = -1;
 
@@ -138,7 +136,6 @@ namespace BetterStarmap
             SetFeatureName("DisplayUnknown");
             configEnable = enable;
         }
-
         public void DrawGui()
         {
             if (configEnable.Value)
@@ -164,7 +161,7 @@ namespace BetterStarmap
         {
             if (configEnable.Value)
             {
-                if (historyUniverseObserveLevel != -1)
+                if(historyUniverseObserveLevel != -1)
                     GameMain.history.universeObserveLevel = historyUniverseObserveLevel;
                 DisplayUnknown_Impl.historyUniverseObserveLevel = -1;
                 DisplayUnknown_Impl.isEnable = false;
@@ -182,16 +179,15 @@ namespace BetterStarmap
         }
     }
 
-    internal class StarHighlight_Impl : BaseFeature<DisplayStarName_Impl>, IFeature
+    class StarHighlight_Impl : BaseFeature<DisplayStarName_Impl>, IFeature
     {
         public interface IStarHighlight
         {
             void DrawGui();
-
             void SetStarColor(UIStarmapStar __instance, ref Text nameText);
         }
 
-        private Queue<IStarHighlight> hignLightQueue = new Queue<IStarHighlight>();
+        Queue<IStarHighlight> hignLightQueue = new Queue<IStarHighlight>();
 
         public void AddFeature(IStarHighlight feature)
         {
@@ -202,10 +198,9 @@ namespace BetterStarmap
         {
             SetFeatureName("StarHighlight");
         }
-
         public void DrawGui()
         {
-            foreach (var feature in hignLightQueue)
+            foreach(var feature in hignLightQueue)
             {
                 feature.DrawGui();
             }
@@ -215,13 +210,13 @@ namespace BetterStarmap
         {
             foreach (var feature in hignLightQueue)
             {
-                feature.SetStarColor(__instance, ref nameText);
+                feature.SetStarColor(__instance,ref nameText);
             }
         }
 
         public class HighLuminosity : IStarHighlight
         {
-            private bool enable = false;
+            bool enable = false;
 
             public void DrawGui()
             {
@@ -237,7 +232,7 @@ namespace BetterStarmap
 
         public class Blackhole : IStarHighlight
         {
-            private bool enable = false;
+            bool enable = false;
 
             public void DrawGui()
             {
@@ -253,7 +248,7 @@ namespace BetterStarmap
 
         public class GiantStar : IStarHighlight
         {
-            private bool enable = false;
+            bool enable = false;
 
             public void DrawGui()
             {
@@ -269,7 +264,7 @@ namespace BetterStarmap
 
         public class WhiteDwarf : IStarHighlight
         {
-            private bool enable = false;
+            bool enable = false;
 
             public void DrawGui()
             {
@@ -289,22 +284,22 @@ namespace BetterStarmap
     {
         public const string __NAME__ = "betterstarmap";
         public const string __GUID__ = "0x.plugins.dsp." + __NAME__;
-
-        public static BetterStarmap self;
+        
+        static public BetterStarmap self;
         private bool isStarMapOpened = false;
 
         public static ConfigEntry<float> DisplayPositionX;
         public static ConfigEntry<float> DisplayPositionY;
 
-        private static FeaturesManage mainFeatures = new FeaturesManage();
-        private static StarHighlight_Impl g_StarHighLight = new StarHighlight_Impl();
+        static FeaturesManage mainFeatures = new FeaturesManage();
+        static StarHighlight_Impl g_StarHighLight = new StarHighlight_Impl();
 
-        private void Start()
+        void Start()
         {
             //Add Features
             mainFeatures.AddFeatrue(new DetailsPreview_Impl());
             mainFeatures.AddFeatrue(
-                new ImmediateMode_Impl(Config.Bind<bool>("config", "ImmediateMode", true, "是否开启查看立即模式功能")
+                new ImmediateMode_Impl( Config.Bind<bool>("config", "ImmediateMode", true, "是否开启查看立即模式功能") 
                 ));
             mainFeatures.AddFeatrue(new DisplayStarName_Impl());
             mainFeatures.AddFeatrue(
@@ -324,7 +319,7 @@ namespace BetterStarmap
             self = this;
             new Harmony(__GUID__).PatchAll();
         }
-
+        
         private void OnGUI()
         {
             if (isStarMapOpened)
@@ -333,7 +328,7 @@ namespace BetterStarmap
 
                 GUILayout.Label("星图功能".ModText());
 
-                foreach (var feature in mainFeatures.features)
+                foreach(var feature in mainFeatures.features)
                 {
                     feature.Value.DrawGui();
                 }
@@ -354,6 +349,7 @@ namespace BetterStarmap
                     if (__instance.viewStar == star.star)
                         return;
                     __instance.screenCameraController.SetViewTarget((PlanetData)null, star.star, (Player)null, VectorLF3.zero, (double)star.star.physicsRadius * 0.899999976158142 * 0.00025, (double)star.star.physicsRadius * (double)Mathf.Pow(star.star.radius * 0.4f, -0.4f) * 3.0 * 0.00025, true, true);
+
                 }
             }
         }
@@ -402,7 +398,7 @@ namespace BetterStarmap
                 ((DetailsPreview_Impl)mainFeatures["DetailsPreview"]).OnMouseHover(__instance);
             }
         }
-
+        
         [HarmonyPatch(typeof(UIStarmapStar), "_OnLateUpdate")]
         private class StarmapStarHighlight_Imp
         {
@@ -418,9 +414,10 @@ namespace BetterStarmap
                 {
                     Text nameText = Traverse.Create((object)__instance).Field("nameText").GetValue<Text>();
 
-                    OriginalSetTextActive(__instance, ref nameText);
+                    OriginalSetTextActive(__instance,ref nameText);
                     g_StarHighLight.SetStarColor(__instance, ref nameText);
                 }
+
             }
 
             private static void OriginalSetTextActive(UIStarmapStar __instance, ref Text nameText)
@@ -446,8 +443,10 @@ namespace BetterStarmap
         {
             private static void Prefix(ref int func, ref double value, ref int level)
             {
-                ((DisplayUnknown_Impl)mainFeatures["DisplayUnknown"]).OnTechUnlock(ref func, ref value, ref level);
+                ((DisplayUnknown_Impl)mainFeatures["DisplayUnknown"]).OnTechUnlock(ref func,ref value,ref level);
             }
         }
+        
+
     }
 }

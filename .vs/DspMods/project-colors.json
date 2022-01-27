@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "bb51924a-5feb-4af5-868a-f5678a161681": {
+      "ProjectGuid": "bb51924a-5feb-4af5-868a-f5678a161681",
+      "DisplayName": "StellarAutoNavigation",
+      "ColorIndex": 0
+    },
+    "38cbf57f-94f4-42d1-8123-f6280d31d015": {
+      "ProjectGuid": "38cbf57f-94f4-42d1-8123-f6280d31d015",
+      "DisplayName": "BetterStarmap",
+      "ColorIndex": 1
+    },
+    "d6fdb636-dfc3-4ee3-9834-eacfe013953c": {
+      "ProjectGuid": "d6fdb636-dfc3-4ee3-9834-eacfe013953c",
+      "DisplayName": "SelectBuilder",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}

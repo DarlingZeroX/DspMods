@@ -19,6 +19,7 @@
                 ResetDirLine();
             }
         }
+
         public VectorLF3 dst
         {
             get
@@ -31,6 +32,7 @@
                 ResetDirLine();
             }
         }
+
         public VectorLF3 line
         {
             get
@@ -38,6 +40,7 @@
                 return __line;
             }
         }
+
         public VectorLF3 dir
         {
             get
@@ -79,6 +82,7 @@
                 __normal = value;
             }
         }
+
         public VectorLF3 ponit
         {
             get
@@ -107,7 +111,11 @@
 
         public VectorLF3 GetIntersection(Line3D line)
         {
+#if LEGACY
             double rhs = VectorLF3.Dot(__normal, __ponit) - VectorLF3.Dot(__normal, line.src);
+#else
+            double rhs = VectorLF3.Dot(__normal, (__ponit - line.src));
+#endif
             double lhs = rhs / VectorLF3.Dot(__normal, line.dir);
 
             return line.src + (line.dir * lhs);

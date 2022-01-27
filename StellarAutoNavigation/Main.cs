@@ -13,134 +13,159 @@ namespace AutoNavigate
         public const string __NAME__ = "StellarAutoNavigation";
         public const string __GUID__ = "0x.plugins.dsp." + __NAME__;
 
-        static public AutoNavigate self;
+        public static AutoNavigate __this;
+        public static AutoStellarNavigation s_NavigateInstance;
+        public static bool s_IsHistoryNavigated = false;
+        public static ConfigEntry<double> s_NavigateMinEnergy;
+
         private Player player = null;
 
-        public static AutoStellarNavigation autoNav;
+        private void Start()
+        {
+            __this = this;
+            s_NavigateInstance = new AutoStellarNavigation(GetNavigationConfig());
 
-        public static bool isHistoryNav = false;
-        public static ConfigEntry<double> minAutoNavEnergy;
-
-        void Start()
-        {         
-            autoNav = new AutoStellarNavigation(GetNavConfig());
-
-            self = this;
             new Harmony(__GUID__).PatchAll();
         }
 
-        void Update()
+        private void Update()
         {
+            //导航开关
             if (Input.GetKeyDown(KeyCode.K) && player != null)
             {
-                autoNav.ToggleNav();
+                s_NavigateInstance.ToggleNavigate();
             }
         }
 
-        private AutoStellarNavigation.NavigationConfig GetNavConfig()
+        private AutoStellarNavigation.NavigationConfig GetNavigationConfig()
         {
-            AutoStellarNavigation.NavigationConfig navConfig = new AutoStellarNavigation.NavigationConfig();
+            var config = new AutoStellarNavigation.NavigationConfig();
 
-            minAutoNavEnergy = Config.Bind<double>("AutoStellarNavigation", "minAutoNavEnergy", 50000000.0, "开启自动导航最低能量(最低50m)");
-            navConfig.speedUpEnergylimit = Config.Bind<double>("AutoStellarNavigation", "SpeedUpEnergylimit", 50000000.0, "开启加速最低能量(默认50m)");
-            navConfig.wrapEnergylimit = Config.Bind<double>("AutoStellarNavigation", "WrapEnergylimit", 800000000, "开启曲率最低能量(默认800m)");
-            navConfig.enableLocalWrap = Config.Bind<bool>("AutoStellarNavigation", "EnableLocalWrap", true, "是否开启本地行星曲率飞行");
-            navConfig.localWrapMinDistance = Config.Bind<double>("AutoStellarNavigation", "LocalWrapMinDistance", 100000.0, "本地行星曲率飞行最短距离");
+            s_NavigateMinEnergy = Config.Bind<double>(
+                "AutoStellarNavigation",
+                "minAutoNavEnergy",
+                50000000.0,
+                "开启自动导航最低能量(最低50m)"
+                );
+            config.speedUpEnergylimit = Config.Bind<double>(
+                "AutoStellarNavigation",
+                "SpeedUpEnergylimit",
+                50000000.0,
+                "开启加速最低能量(默认50m)"
+                );
+            config.wrapEnergylimit = Config.Bind<double>(
+                "AutoStellarNavigation",
+                "WrapEnergylimit",
+                800000000,
+                "开启曲率最低能量(默认800m)"
+                );
+            config.enableLocalWrap = Config.Bind<bool>(
+                "AutoStellarNavigation",
+                "EnableLocalWrap",
+                true,
+                "是否开启本地行星曲率飞行"
+                );
+            config.localWrapMinDistance = Config.Bind<double>(
+                "AutoStellarNavigation",
+                "LocalWrapMinDistance",
+                100000.0,
+                "本地行星曲率飞行最短距离"
+                );
 
-            if (minAutoNavEnergy.Value < 50000000.0)
-                minAutoNavEnergy.Value = 50000000.0;
+            if (s_NavigateMinEnergy.Value < 50000000.0)
+                s_NavigateMinEnergy.Value = 50000000.0;
 
-            return navConfig;
+            return config;
         }
 
-        class SafeMod
+        /// <summary>
+        /// 安全模式，确保不会出现一些未知错误
+        /// </summary>
+        private class SafeMode
         {
-            public static void ResetMod()
+            public static void Reset()
             {
-                isHistoryNav = false;
-                autoNav.Reset();
-                autoNav.target.Reset();               
-                self.player = null;
+                s_IsHistoryNavigated = false;
+                s_NavigateInstance.Reset();
+                s_NavigateInstance.target.Reset();
+                __this.player = null;
             }
 
             [HarmonyPatch(typeof(GameMain), "OnDestroy")]
             public class SafeDestroy
             {
-                private static void Prefix()
-                {
-                    ResetMod();
-                }
+                private static void Prefix() =>
+                    Reset();
             }
 
             [HarmonyPatch(typeof(GameMain), "Pause")]
             public class SafePause
             {
-                public static void Prefix()
-                {
-                    autoNav.pause();
-                }
+                public static void Prefix() =>
+                    s_NavigateInstance.Pause();
             }
 
             [HarmonyPatch(typeof(GameMain), "Resume")]
             public class SafeResume
             {
-                public static void Prefix()
-                {
-                    autoNav.resume();
-                }
+                public static void Prefix() =>
+                    s_NavigateInstance.Resume();
             }
         }
-
 
         [HarmonyPatch(typeof(PlayerController), "Init")]
         private class PlayerControllerInit
         {
-            private static void Postfix(PlayerController __instance)
-            {
-                self.player = __instance.player;
-            }
+            private static void Postfix(PlayerController __instance) =>
+                __this.player = __instance.player;
         }
-/// --------------------------
-/// AutoStellarNavigation
-/// --------------------------
+
+        /// <summary>
+        /// Navigate Tips
+        /// </summary>
         [HarmonyPatch(typeof(UIGeneralTips), "_OnUpdate")]
         private class NavigateTips
         {
-            static Vector2 anchoredPosition = new Vector2(0.0f, 160.0f);
+            //Tip position offest
+            private static Vector2 anchoredPosition = new Vector2(0.0f, 160.0f);
 
             public static void Postfix(UIGeneralTips __instance)
             {
+                if (!s_NavigateInstance.enable)
+                    return;
+
                 Text modeText = Traverse.Create((object)__instance).Field("modeText").GetValue<Text>();
-                if (autoNav.enable)
-                {
-                    modeText.gameObject.SetActive(true);
-                    modeText.rectTransform.anchoredPosition = anchoredPosition;
 
-                    if (autoNav.IsCurNavPlanet())
-                        modeText.text = "星际自动导航".ModText();
-                    else if (autoNav.IsCurNavStar())
-                        modeText.text = "星系自动导航".ModText();
+                modeText.gameObject.SetActive(true);
+                modeText.rectTransform.anchoredPosition = anchoredPosition;
 
-                    autoNav.modeText = modeText;
-                }
+                if (s_NavigateInstance.IsCurNavPlanet)
+                    modeText.text = "星际自动导航".ModText();
+                else if (s_NavigateInstance.IsCurNavStar)
+                    modeText.text = "星系自动导航".ModText();
 
+                s_NavigateInstance.modeText = modeText;
             }
         }
 
+        /// <summary>
+        /// Sail speed up
+        /// </summary>
         [HarmonyPatch(typeof(VFInput), "_sailSpeedUp", MethodType.Getter)]
         private class SailSpeedUp
         {
             private static void Postfix(ref bool __result)
             {
-                if (autoNav.enable && autoNav.sailSpeedUp)
-                {
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (s_NavigateInstance.sailSpeedUp)
                     __result = true;
-                }                 
             }
         }
 
         /// <summary>
-        /// Sail Mode
+        /// Sail mode
         /// </summary>
         [HarmonyPatch(typeof(PlayerMove_Sail), "GameTick")]
         private class SailMode_AutoNavigate
@@ -149,142 +174,145 @@ namespace AutoNavigate
 
             private static void Prefix(PlayerMove_Sail __instance)
             {
-                if (autoNav.enable && (__instance.player.sailing || __instance.player.warping))
-                {
-                    ++__instance.controller.input0.y;
-                    oTargetURot = __instance.sailPoser.targetURot;
+                if (!s_NavigateInstance.enable)
+                    return;
 
-                    if (autoNav.IsCurNavStar())
-                    {
-                       autoNav.StarNavigation(__instance);
-                       
-                    }
-                    else if (autoNav.IsCurNavPlanet() )
-                    {
-                        autoNav.PlanetNavigation(__instance);
-                    }
-                }
+                if (!__instance.player.sailing && !__instance.player.warping)
+                    return;
+
+                ++__instance.controller.input0.y;
+                oTargetURot = __instance.sailPoser.targetURot;
+
+                if (s_NavigateInstance.IsCurNavStar)
+                    s_NavigateInstance.StarNavigation(__instance);
+                else if (s_NavigateInstance.IsCurNavPlanet)
+                    s_NavigateInstance.PlanetNavigation(__instance);
             }
 
             private static void Postfix(PlayerMove_Sail __instance)
             {
-                if (autoNav.enable && (GameMain.localPlanet != null || autoNav.target.IsVaild() ))
+                // Sail 默认不加速
+                s_NavigateInstance.sailSpeedUp = false;
+
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (GameMain.localPlanet != null ||
+                    s_NavigateInstance.target.IsVaild())
                 {
                     __instance.sailPoser.targetURot = oTargetURot;
-                    autoNav.HandlePlayerInput();
+                    s_NavigateInstance.HandlePlayerInput();
                 }
-
-                autoNav.sailSpeedUp = false;
             }
         }
 
         /// <summary>
-        /// Fly Mode
+        /// Fly mode
         /// </summary>
         [HarmonyPatch(typeof(PlayerMove_Fly), "GameTick")]
         private class FlyMode_TrySwtichToSail
         {
-            static float sailMinAltitude = 49.0f;
+            private static float sailMinAltitude = 49.0f;
 
+            /// <summary>
+            /// Fly --> Sail or Arrive
+            /// </summary>
             private static void Prefix(PlayerMove_Fly __instance)
             {
-                if (autoNav.enable)
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (__instance.player.movementState != EMovementState.Fly)
+                    return;
+
+                if (s_NavigateInstance.DetermineArrive())
                 {
-                    if (__instance.player.movementState != EMovementState.Fly)
-                        return;
-
-                    if (autoNav.DetermineArrive())
-                    {
-                        ModDebug.Log("FlyModeArrive");
-                        autoNav.Arrive();
-
-                    }
-                    else if (
-                        __instance.mecha.thrusterLevel < 2)
-                    {
-                        autoNav.Arrive("驱动引擎等级过低".ModText());
-                    }
-                    else if (__instance.player.mecha.coreEnergy < minAutoNavEnergy.Value)
-                    {
-                        autoNav.Arrive("机甲能量过低".ModText());
-                    }
-                    else
-                    {
-                        ++__instance.controller.input1.y;
-
-                        if (__instance.currentAltitude > sailMinAltitude)
-                        {
-                            AutoStellarNavigation.Fly.TrySwtichToSail(__instance);
-                        }
-                    }
+                    ModDebug.Log("FlyModeArrive");
+                    s_NavigateInstance.Arrive();
                 }
+                else if (__instance.mecha.thrusterLevel < 2)
+                {
+                    s_NavigateInstance.Arrive("驱动引擎等级过低".ModText());
+                }
+                else if (__instance.player.mecha.coreEnergy < s_NavigateMinEnergy.Value)
+                {
+                    s_NavigateInstance.Arrive("机甲能量过低".ModText());
+                }
+                else
+                {
+                    ++__instance.controller.input1.y;
 
+                    if (__instance.currentAltitude > sailMinAltitude)
+                        AutoStellarNavigation.Fly.TrySwtichToSail(__instance);
+                }
             }
         }
 
         /// <summary>
-        /// Walk Mode
+        /// Walk mode
         /// </summary>
         [HarmonyPatch(typeof(PlayerMove_Walk), "UpdateJump")]
-        private class WalkMode_TrySwticToFly
+        private class WalkMode_TrySwtichToFly
         {
+            /// <summary>
+            /// Walk --> Fly or Arrive
+            /// </summary>
             private static void Postfix(PlayerMove_Walk __instance, ref bool __result)
             {
+                __result = false;
 
-                if (autoNav.enable && autoNav.target.IsVaild())
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (!s_NavigateInstance.target.IsVaild())
+                    return;
+
+                if (s_NavigateInstance.DetermineArrive())
                 {
-                    if (autoNav.DetermineArrive())
-                    {
-                        ModDebug.Log("WalkModeArrive");
-                        autoNav.Arrive();
-                    }
-                    else if (
-                        __instance.mecha.thrusterLevel < 1)
-                    {
-                        autoNav.Arrive("驱动引擎等级过低".ModText());
-                    }
-                    else if (__instance.player.mecha.coreEnergy < minAutoNavEnergy.Value)
-                    {
-                        autoNav.Arrive("机甲能量过低".ModText());
-                    }
-                    else
-                    {
-                        AutoStellarNavigation.Walk.TrySwitchToFly(__instance);
-                        __result = true;
-                        return;
-
-                    }
-
-                    __result = false;
+                    ModDebug.Log("WalkModeArrive");
+                    s_NavigateInstance.Arrive();
                 }
-
+                else if (__instance.mecha.thrusterLevel < 1)
+                {
+                    s_NavigateInstance.Arrive("驱动引擎等级过低".ModText());
+                }
+                else if (__instance.player.mecha.coreEnergy < s_NavigateMinEnergy.Value)
+                {
+                    s_NavigateInstance.Arrive("机甲能量过低".ModText());
+                }
+                else
+                {
+                    AutoStellarNavigation.Walk.TrySwitchToFly(__instance);
+                    //切换至Fly Mode 中对 UpdateJump 方法进行拦截
+                    __result = true;
+                }
             }
-
         }
 
-
-/// --------------------------
-/// Starmap Indicator
-/// --------------------------
+        /// --------------------------
+        /// Starmap Indicator   游戏内置星球导航指示标
+        /// --------------------------
         [HarmonyPatch(typeof(UIStarmap), "OnCursorFunction3Click")]
         private class OnSetIndicatorAstro
         {
+            /// <summary>
+            /// 根据 Indicator (导航指示标) 设置导航目标
+            /// </summary>
             private static void Prefix(UIStarmap __instance)
             {
                 PlayerNavigation navigation = GameMain.mainPlayer.navigation;
+
                 if (__instance.focusPlanet != null &&
                     navigation.indicatorAstroId != __instance.focusPlanet.planet.id)
                 {
-                    autoNav.target.SetTarget(__instance.focusPlanet.planet);
+                    s_NavigateInstance.target.SetTarget(__instance.focusPlanet.planet);
                 }
                 else if (__instance.focusStar != null &&
                     navigation.indicatorAstroId != __instance.focusStar.star.id * 100)
                 {
-                    autoNav.target.SetTarget(__instance.focusStar.star);
+                    s_NavigateInstance.target.SetTarget(__instance.focusStar.star);
                 }
             }
         }
-
-
     }
 }

@@ -1,0 +1,2 @@
+E:\Github\DspMods\SelectBuilder\obj\Release\SelectBuilder.csproj.AssemblyReference.cache
+E:\Github\DspMods\SelectBuilder\obj\Release\SelectBuilder.csproj.CoreCompileInputs.cache

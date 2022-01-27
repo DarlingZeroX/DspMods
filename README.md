@@ -2,17 +2,17 @@
 
 [BetterStarmap]
 
- multiple star map function expansion (多种星图功能扩展)
+多种星图功能扩展 multiple star map function expansion 
 
 
 [StellarAutoNavigation]
 
-Interstellar navigation mark + Stellar Auto Navigation(星际导航标记+星际自动航行)
+星际自动航行Stellar Auto Navigation 
 
 
 [SelectBuild]
 
-Frame selection destruct and upgrade(框选拆除升级) 
+框选拆除升级 Frame selection destruct and upgrade
 
 
 

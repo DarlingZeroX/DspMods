@@ -1,0 +1,9 @@
+E:\Github\DspMods\BetterStarmap\obj\Release\BetterStarmap.csproj.AssemblyReference.cache
+E:\Github\DspMods\BetterStarmap\obj\Release\BetterStarmap.csproj.CoreCompileInputs.cache
+E:\Github\DspMods\BetterStarmap\bin\Release\BetterStarmap.dll
+E:\Github\DspMods\BetterStarmap\bin\Release\BetterStarmap.pdb
+E:\Github\DspMods\BetterStarmap\bin\Release\UnityEngine.IMGUIModule.dll
+E:\Github\DspMods\BetterStarmap\bin\Release\UnityEngine.SharedInternalsModule.dll
+E:\Github\DspMods\BetterStarmap\obj\Release\BetterStarmap.csproj.CopyComplete
+E:\Github\DspMods\BetterStarmap\obj\Release\BetterStarmap.dll
+E:\Github\DspMods\BetterStarmap\obj\Release\BetterStarmap.pdb
