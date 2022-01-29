@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿#define QUICK_INDICATOR
+
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using BepInEx;
@@ -30,11 +32,15 @@ namespace AutoNavigate
 
         private void Update()
         {
-            //导航开关
-            if (Input.GetKeyDown(KeyCode.K) && player != null)
+            if (player != null)
             {
-                s_NavigateInstance.ToggleNavigate();
+                //导航开关  (K键可能会在将来版本弃用)
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.K))
+                {
+                    s_NavigateInstance.ToggleNavigate();
+                }
             }
+       
         }
 
         private AutoStellarNavigation.NavigationConfig GetNavigationConfig()
@@ -312,5 +318,85 @@ namespace AutoNavigate
                 }
             }
         }
+
+#if QUICK_INDICATOR
+        /// --------------------------
+        /// 自动导航时鼠标单击目标即可切换导航目标
+        /// --------------------------
+        [HarmonyPatch(typeof(UIStarmap), "UpdateCursorView")]
+        private class UIStarmap_UpdateCursorView
+        {
+            private static void Postfix(UIStarmap __instance)
+            {
+                //if (!s_NavigateInstance.enable)
+                //    return;
+
+                //Indicator 开关
+                if (!Input.GetKeyDown(KeyCode.LeftControl))
+                    return;
+
+                if (__instance.mouseHoverStar != null && __instance.mouseHoverStar.star != null)
+                {
+                    __instance.focusStar = __instance.mouseHoverStar;
+                    __instance.focusPlanet = null;
+                    __instance.OnCursorFunction3Click(0);
+
+                    //s_NavigateInstance.target.SetTarget(__instance.mouseHoverStar.star);
+                    return;
+                }
+
+                if (__instance.mouseHoverPlanet != null && __instance.mouseHoverPlanet.planet != null)
+                {
+                    __instance.focusPlanet = __instance.mouseHoverPlanet;
+                    __instance.focusStar = null;
+                    __instance.OnCursorFunction3Click(0);
+
+                    //s_NavigateInstance.target.SetTarget(__instance.mouseHoverPlanet.planet);
+                    return;
+                }
+            }
+        }
+#endif
+
+#if FAST_SWITH_TARGET
+        /// --------------------------
+        /// 自动导航时鼠标单击目标即可切换导航目标
+        /// --------------------------
+        [HarmonyPatch(typeof(UIStarmap), "OnStarClick")]
+        private class UIStarmap_OnStarClick
+        {
+            private static void Prefix(UIStarmap __instance, ref UIStarmapStar star)
+            {
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (star == null || star.star == null)
+                    return;
+
+                s_NavigateInstance.target.SetTarget(star.star);
+
+                __instance.focusStar = star;
+                __instance.OnCursorFunction3Click(0);
+            }
+        }
+
+        [HarmonyPatch(typeof(UIStarmap), "OnPlanetClick")]
+        private class UIStarmap_OnPlanetClick
+        {
+            private static void Prefix(UIStarmap __instance, ref UIStarmapPlanet planet)
+            {
+                if (!s_NavigateInstance.enable)
+                    return;
+
+                if (planet == null || planet.planet == null)
+                    return;
+
+                s_NavigateInstance.target.SetTarget(planet.planet);
+
+                __instance.focusPlanet = planet;
+                __instance.OnCursorFunction3Click(0);
+            }
+        }
+#endif
     }
 }
