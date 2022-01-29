@@ -259,8 +259,6 @@ namespace AutoNavigate
             /// </summary>
             private static void Postfix(PlayerMove_Walk __instance, ref bool __result)
             {
-                __result = false;
-
                 if (!s_NavigateInstance.enable)
                     return;
 

@@ -4,8 +4,6 @@
     {
         private VectorLF3 __src;
         private VectorLF3 __dst;
-        private VectorLF3 __line;
-        private VectorLF3 __dir;
 
         public VectorLF3 src
         {
@@ -35,18 +33,14 @@
 
         public VectorLF3 line
         {
-            get
-            {
-                return __line;
-            }
+            get;
+            private set;
         }
 
         public VectorLF3 dir
         {
-            get
-            {
-                return __dir;
-            }
+            get;
+            private set;
         }
 
         public Line3D() : this(VectorLF3.zero, VectorLF3.zero)
@@ -61,38 +55,23 @@
 
         private void ResetDirLine()
         {
-            __line = __dst - __src;
-            __dir = __line.normalized;
+            line = __dst - __src;
+            dir = line.normalized;
         }
     }
 
     public class Plane3D
     {
-        private VectorLF3 __normal;
-        private VectorLF3 __ponit;
-
         public VectorLF3 normal
         {
-            get
-            {
-                return normal;
-            }
-            set
-            {
-                __normal = value;
-            }
+            get;
+            set;
         }
 
         public VectorLF3 ponit
         {
-            get
-            {
-                return ponit;
-            }
-            set
-            {
-                __ponit = value;
-            }
+            get;
+            set;
         }
 
         public Plane3D() : this(VectorLF3.zero, VectorLF3.zero)
@@ -100,13 +79,13 @@
 
         public Plane3D(VectorLF3 ponit, VectorLF3 normal)
         {
-            __ponit = ponit;
-            __normal = normal;
+            this.ponit = ponit;
+            this.normal = normal;
         }
 
         public bool IsParallel(Line3D line)
         {
-            return VectorLF3.Dot(line.dir, __normal) == 0;
+            return VectorLF3.Dot(line.dir, normal) == 0;
         }
 
         public VectorLF3 GetIntersection(Line3D line)
@@ -114,9 +93,9 @@
 #if LEGACY
             double rhs = VectorLF3.Dot(__normal, __ponit) - VectorLF3.Dot(__normal, line.src);
 #else
-            double rhs = VectorLF3.Dot(__normal, (__ponit - line.src));
+            double rhs = VectorLF3.Dot(normal, (ponit - line.src));
 #endif
-            double lhs = rhs / VectorLF3.Dot(__normal, line.dir);
+            double lhs = rhs / VectorLF3.Dot(normal, line.dir);
 
             return line.src + (line.dir * lhs);
         }
