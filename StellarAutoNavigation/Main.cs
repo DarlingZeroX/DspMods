@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace AutoNavigate
 {
-    [BepInPlugin(__GUID__, __NAME__, "1.03")]
+    [BepInPlugin(__GUID__, __NAME__, "1.04")]
     public class AutoNavigate : BaseUnityPlugin
     {
         public const string __NAME__ = "StellarAutoNavigation";
@@ -321,7 +321,7 @@ namespace AutoNavigate
 
 #if QUICK_INDICATOR
         /// --------------------------
-        /// 自动导航时鼠标单击目标即可切换导航目标
+        /// 快速设置导航标识
         /// --------------------------
         [HarmonyPatch(typeof(UIStarmap), "UpdateCursorView")]
         private class UIStarmap_UpdateCursorView
