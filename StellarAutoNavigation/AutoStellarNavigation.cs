@@ -261,6 +261,8 @@ namespace AutoNavigate
 
         public void Reset()
         {
+            //target.Reset();
+
             isHistoryNav = false;
             player = null;
             enable = false;

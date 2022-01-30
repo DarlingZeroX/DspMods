@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace AutoNavigate
 {
-    [BepInPlugin(__GUID__, __NAME__, "1.04")]
+    [BepInPlugin(__GUID__, __NAME__, "1.05")]
     public class AutoNavigate : BaseUnityPlugin
     {
         public const string __NAME__ = "StellarAutoNavigation";
@@ -35,8 +35,10 @@ namespace AutoNavigate
             if (player != null)
             {
                 //导航开关  (K键可能会在将来版本弃用)
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.K))
+                if (Input.GetKeyDown(KeyCode.Keypad0) || Input.GetKeyDown(KeyCode.K))
                 {
+                    //PlayerNavigation navigation = GameMain.mainPlayer.navigation;
+
                     s_NavigateInstance.ToggleNavigate();
                 }
             }
