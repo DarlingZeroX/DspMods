@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace AutoNavigate
 {
-    [BepInPlugin(__GUID__, __NAME__, "1.05")]
+    [BepInPlugin(__GUID__, __NAME__, "1.06")]
     public class AutoNavigate : BaseUnityPlugin
     {
         public const string __NAME__ = "StellarAutoNavigation";
@@ -147,9 +147,9 @@ namespace AutoNavigate
                 modeText.rectTransform.anchoredPosition = anchoredPosition;
 
                 if (s_NavigateInstance.IsCurNavPlanet)
-                    modeText.text = "星际自动导航".ModText();
+                    modeText.text = "星际自动导航".LocalText();
                 else if (s_NavigateInstance.IsCurNavStar)
-                    modeText.text = "星系自动导航".ModText();
+                    modeText.text = "星系自动导航".LocalText();
 
                 s_NavigateInstance.modeText = modeText;
             }
@@ -239,11 +239,11 @@ namespace AutoNavigate
                 }
                 else if (__instance.mecha.thrusterLevel < 2)
                 {
-                    s_NavigateInstance.Arrive("驱动引擎等级过低".ModText());
+                    s_NavigateInstance.Arrive("驱动引擎等级过低".LocalText());
                 }
                 else if (__instance.player.mecha.coreEnergy < s_NavigateMinEnergy.Value)
                 {
-                    s_NavigateInstance.Arrive("机甲能量过低".ModText());
+                    s_NavigateInstance.Arrive("机甲能量过低".LocalText());
                 }
                 else
                 {
@@ -259,7 +259,7 @@ namespace AutoNavigate
         /// Walk mode
         /// </summary>
         [HarmonyPatch(typeof(PlayerMove_Walk), "UpdateJump")]
-        private class WalkMode_TrySwtichToFly
+        private class WalkMode_TrySwitchToFly
         {
             /// <summary>
             /// Walk --> Fly or Arrive
@@ -279,11 +279,11 @@ namespace AutoNavigate
                 }
                 else if (__instance.mecha.thrusterLevel < 1)
                 {
-                    s_NavigateInstance.Arrive("驱动引擎等级过低".ModText());
+                    s_NavigateInstance.Arrive("驱动引擎等级过低".LocalText());
                 }
                 else if (__instance.player.mecha.coreEnergy < s_NavigateMinEnergy.Value)
                 {
-                    s_NavigateInstance.Arrive("机甲能量过低".ModText());
+                    s_NavigateInstance.Arrive("机甲能量过低".LocalText());
                 }
                 else
                 {

@@ -26,7 +26,7 @@ public static class ModTranslate
         { "白矮星","WhiteDwarf" },
     };
 
-    public static string ModText(this string text)
+    public static string LocalText(this string text)
     {
         if (Localization.language == Language.zhCN)
         {

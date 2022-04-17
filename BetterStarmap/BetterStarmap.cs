@@ -26,7 +26,7 @@ namespace BetterStarmap
 
         public void DrawGui()
         {
-            isEnable = GUILayout.Toggle(isEnable, "星球细节预览".ModText());
+            isEnable = GUILayout.Toggle(isEnable, "星球细节预览".LocalText());
         }
 
         private void Reset()
@@ -112,7 +112,7 @@ namespace BetterStarmap
         public void DrawGui()
         {
             if (configEnable.Value)
-                isEnable = GUILayout.Toggle(isEnable, "查看立即模式".ModText());
+                isEnable = GUILayout.Toggle(isEnable, "查看立即模式".LocalText());
         }
     }
 
@@ -125,7 +125,7 @@ namespace BetterStarmap
 
         public void DrawGui()
         {
-            isEnable = GUILayout.Toggle(isEnable, "显示星球名称".ModText());
+            isEnable = GUILayout.Toggle(isEnable, "显示星球名称".LocalText());
         }
     }
 
@@ -142,7 +142,7 @@ namespace BetterStarmap
         public void DrawGui()
         {
             if (configEnable.Value)
-                isEnable = GUILayout.Toggle(isEnable, "探测未知信息".ModText());
+                isEnable = GUILayout.Toggle(isEnable, "探测未知信息".LocalText());
 
             CheckDisplayUnknown();
         }
@@ -225,7 +225,7 @@ namespace BetterStarmap
 
             public void DrawGui()
             {
-                enable = GUILayout.Toggle(enable, "高光度恒星".ModText());
+                enable = GUILayout.Toggle(enable, "高光度恒星".LocalText());
             }
 
             public void SetStarColor(UIStarmapStar __instance, ref Text nameText)
@@ -241,7 +241,7 @@ namespace BetterStarmap
 
             public void DrawGui()
             {
-                enable = GUILayout.Toggle(enable, "黑洞中子星".ModText());
+                enable = GUILayout.Toggle(enable, "黑洞中子星".LocalText());
             }
 
             public void SetStarColor(UIStarmapStar __instance, ref Text nameText)
@@ -257,7 +257,7 @@ namespace BetterStarmap
 
             public void DrawGui()
             {
-                enable = GUILayout.Toggle(enable, "巨星".ModText());
+                enable = GUILayout.Toggle(enable, "巨星".LocalText());
             }
 
             public void SetStarColor(UIStarmapStar __instance, ref Text nameText)
@@ -273,7 +273,7 @@ namespace BetterStarmap
 
             public void DrawGui()
             {
-                enable = GUILayout.Toggle(enable, "白矮星".ModText());
+                enable = GUILayout.Toggle(enable, "白矮星".LocalText());
             }
 
             public void SetStarColor(UIStarmapStar __instance, ref Text nameText)
@@ -331,13 +331,13 @@ namespace BetterStarmap
             {
                 GUILayout.BeginArea(new Rect(Screen.width * DisplayPositionX.Value, Screen.height * DisplayPositionY.Value, 200, 300));
 
-                GUILayout.Label("星图功能".ModText());
+                GUILayout.Label("星图功能".LocalText());
 
                 foreach (var feature in mainFeatures.features)
                 {
                     feature.Value.DrawGui();
                 }
-                GUILayout.Label("星系显示".ModText());
+                GUILayout.Label("星系显示".LocalText());
                 g_StarHighLight.DrawGui();
 
                 GUILayout.EndArea();

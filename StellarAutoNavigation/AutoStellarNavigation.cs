@@ -209,11 +209,11 @@ namespace AutoNavigate
         private NavigationConfig config;
 
         private bool useConfigFile = true;
-        private double speedUpEnergylimit;
-        private double wrapEnergylimit;
-        private double planetNearastDistance;
+        private double speedUpEnergyLimit;
+        private double wrapEnergyLimit;
+        private double planetNearestDistance;
         private int sparseStarPlanetCount;
-        private double sparseStarPlanetNearastDistance;
+        private double sparseStarPlanetNearestDistance;
         private double longNavUncoverRange;
         private double shortNavUncoverRange;
         private bool enableLocalWrap;
@@ -270,11 +270,11 @@ namespace AutoNavigate
 
             if (useConfigFile)
             {
-                speedUpEnergylimit = config.speedUpEnergylimit.Value > 0 ? config.speedUpEnergylimit.Value : 0;
-                wrapEnergylimit = config.wrapEnergylimit.Value > 0 ? config.wrapEnergylimit.Value : 0;
-                planetNearastDistance = 60000.0;
+                speedUpEnergyLimit = config.speedUpEnergylimit.Value > 0 ? config.speedUpEnergylimit.Value : 0;
+                wrapEnergyLimit = config.wrapEnergylimit.Value > 0 ? config.wrapEnergylimit.Value : 0;
+                planetNearestDistance = 60000.0;
                 sparseStarPlanetCount = 2;
-                sparseStarPlanetNearastDistance = 200000.0;
+                sparseStarPlanetNearestDistance = 200000.0;
                 Target.s_FocusParam = 0.02;
                 longNavUncoverRange = 1000.0;
                 shortNavUncoverRange = 100.0;
@@ -283,11 +283,11 @@ namespace AutoNavigate
             }
             else
             {
-                speedUpEnergylimit = 50000000.0;
-                wrapEnergylimit = 1000000000;
-                planetNearastDistance = 60000.0;
+                speedUpEnergyLimit = 50000000.0;
+                wrapEnergyLimit = 1000000000;
+                planetNearestDistance = 60000.0;
                 sparseStarPlanetCount = 2;
-                sparseStarPlanetNearastDistance = 200000.0;
+                sparseStarPlanetNearestDistance = 200000.0;
                 Target.s_FocusParam = 0.02;
                 longNavUncoverRange = 1000.0;
                 shortNavUncoverRange = 100.0;
@@ -312,7 +312,7 @@ namespace AutoNavigate
 
         public bool Arrive(string extraTip = null)
         {
-            string tip = "导航模式结束".ModText();
+            string tip = "导航模式结束".LocalText();
 
             if (extraTip != null)
                 tip += ("-" + extraTip);
@@ -507,14 +507,14 @@ namespace AutoNavigate
             {
                 //星系行星较少的情况
                 if (GameMain.localStar.planetCount <= sparseStarPlanetCount &&
-                    distance < sparseStarPlanetNearastDistance)
+                    distance < sparseStarPlanetNearestDistance)
                     return true;
 
-                if (distance < planetNearastDistance)
+                if (distance < planetNearestDistance)
                     closeFlag = true;
             }
             //靠近本地星系恒星
-            else if ((GameMain.localStar.uPosition - __instance.player.uPosition).magnitude < planetNearastDistance)
+            else if ((GameMain.localStar.uPosition - __instance.player.uPosition).magnitude < planetNearestDistance)
                 closeFlag = true;
 
             return closeFlag;
@@ -666,7 +666,7 @@ namespace AutoNavigate
             }
             else if (Target.IsFocusingNormalized(dir, __instance.player.uVelocity.normalized) && !__instance.player.warping)
             {
-                if (__instance.player.mecha.coreEnergy >= wrapEnergylimit && Warp.TryWrap(this, __instance))
+                if (__instance.player.mecha.coreEnergy >= wrapEnergyLimit && Warp.TryWrap(this, __instance))
                 {
 #if DEBUG
                     ModDebug.Log("Enter Wrap");
@@ -698,7 +698,7 @@ namespace AutoNavigate
 
             bool LongDistanceNavigateNeedSpeedUp()
             {
-                if (__instance.player.mecha.coreEnergy >= speedUpEnergylimit)
+                if (__instance.player.mecha.coreEnergy >= speedUpEnergyLimit)
                 {
                     if (__instance.player.mecha.thrusterLevel < THRUSTER_LEVEL_WARP)
                         return true;
@@ -708,7 +708,7 @@ namespace AutoNavigate
                     return true;
                 }
                 //Prepare warp
-                if (__instance.player.mecha.coreEnergy < wrapEnergylimit)
+                if (__instance.player.mecha.coreEnergy < wrapEnergyLimit)
                     return false;
                 return false;
             }
@@ -798,7 +798,7 @@ namespace AutoNavigate
 
             public static void TrySpeedUp(AutoStellarNavigation __this, PlayerMove_Sail __instance)
             {
-                if (__instance.player.mecha.coreEnergy >= __this.speedUpEnergylimit)
+                if (__instance.player.mecha.coreEnergy >= __this.speedUpEnergyLimit)
                 {
                     __this.sailSpeedUp = true;
                 }
