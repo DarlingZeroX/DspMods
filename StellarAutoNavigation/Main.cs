@@ -42,7 +42,6 @@ namespace AutoNavigate
                     s_NavigateInstance.ToggleNavigate();
                 }
             }
-       
         }
 
         private AutoStellarNavigation.NavigationConfig GetNavigationConfig()
@@ -218,7 +217,7 @@ namespace AutoNavigate
         /// Fly mode
         /// </summary>
         [HarmonyPatch(typeof(PlayerMove_Fly), "GameTick")]
-        private class FlyMode_TrySwtichToSail
+        private class FlyMode_TrySwitchToSail
         {
             private static float sailMinAltitude = 49.0f;
 
@@ -306,22 +305,24 @@ namespace AutoNavigate
             /// </summary>
             private static void Prefix(UIStarmap __instance)
             {
-                PlayerNavigation navigation = GameMain.mainPlayer.navigation;
-
-                if (__instance.focusPlanet != null &&
-                    navigation.indicatorAstroId != __instance.focusPlanet.planet.id)
+                if ((UnityEngine.Object)__instance.focusPlanet != (UnityEngine.Object)null &&
+                    __instance.focusPlanet.planet != null)
                 {
                     s_NavigateInstance.target.SetTarget(__instance.focusPlanet.planet);
+                    return;
                 }
-                else if (__instance.focusStar != null &&
-                    navigation.indicatorAstroId != __instance.focusStar.star.id * 100)
+
+                if ((UnityEngine.Object)__instance.focusStar != (UnityEngine.Object)null &&
+                    __instance.focusStar.star != null)
                 {
                     s_NavigateInstance.target.SetTarget(__instance.focusStar.star);
+                    return;
                 }
             }
         }
 
 #if QUICK_INDICATOR
+
         /// --------------------------
         /// 快速设置导航标识
         /// --------------------------
@@ -358,6 +359,7 @@ namespace AutoNavigate
                 }
             }
         }
+
 #endif
 
 #if FAST_SWITH_TARGET

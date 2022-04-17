@@ -5,3 +5,4 @@ E:\Github\DspMods\StellarAutoNavigation\obj\Debug\AutoStellarNavigation.csproj.G
 E:\Github\DspMods\StellarAutoNavigation\obj\Debug\AutoStellarNavigation.csproj.CoreCompileInputs.cache
 E:\Github\DspMods\StellarAutoNavigation\obj\Debug\AutoStellarNavigation.dll
 E:\Github\DspMods\StellarAutoNavigation\obj\Debug\AutoStellarNavigation.pdb
+E:\Github\DspMods\StellarAutoNavigation\obj\Debug\AutoStellarNavigation.csproj.AssemblyReference.cache
