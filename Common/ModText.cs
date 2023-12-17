@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 public static class ModTranslate
 {
@@ -28,7 +29,7 @@ public static class ModTranslate
 
     public static string LocalText(this string text)
     {
-        if (Localization.language == Language.zhCN)
+        if (Localization.isZHCN)
         {
             return text;
         }
