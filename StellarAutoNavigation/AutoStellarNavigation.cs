@@ -794,7 +794,7 @@ namespace AutoNavigate
         public static class Sail
         {
             public static void SetDir(PlayerMove_Sail __instance, VectorLF3 dir) =>
-                __instance.sailPoser.targetURot = Quaternion.LookRotation(dir);
+                __instance.controller.fwdRayUDir = dir;
 
             public static void TrySpeedUp(AutoStellarNavigation __this, PlayerMove_Sail __instance)
             {

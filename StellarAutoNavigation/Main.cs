@@ -9,7 +9,7 @@ using HarmonyLib;
 
 namespace AutoNavigate
 {
-    [BepInPlugin(__GUID__, __NAME__, "1.06")]
+    [BepInPlugin(__GUID__, __NAME__, "1.07")]
     public class AutoNavigate : BaseUnityPlugin
     {
         public const string __NAME__ = "StellarAutoNavigation";
@@ -177,7 +177,7 @@ namespace AutoNavigate
         [HarmonyPatch(typeof(PlayerMove_Sail), "GameTick")]
         private class SailMode_AutoNavigate
         {
-            private static Quaternion oTargetURot;
+            private static VectorLF3 ofwdRayUDir;
 
             private static void Prefix(PlayerMove_Sail __instance)
             {
@@ -188,7 +188,7 @@ namespace AutoNavigate
                     return;
 
                 ++__instance.controller.input0.y;
-                oTargetURot = __instance.sailPoser.targetURot;
+                ofwdRayUDir = __instance.controller.fwdRayUDir;
 
                 if (s_NavigateInstance.IsCurNavStar)
                     s_NavigateInstance.StarNavigation(__instance);
@@ -207,9 +207,9 @@ namespace AutoNavigate
                 if (GameMain.localPlanet != null ||
                     s_NavigateInstance.target.IsVaild())
                 {
-                    __instance.sailPoser.targetURot = oTargetURot;
                     s_NavigateInstance.HandlePlayerInput();
                 }
+                __instance.controller.fwdRayUDir = ofwdRayUDir;
             }
         }
 
